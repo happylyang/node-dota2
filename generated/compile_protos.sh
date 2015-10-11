@@ -7,7 +7,7 @@
 TMP_FOLDER="/tmp/Dota2"
 DOTA_PROTOS_PATH="$TMP_FOLDER/Resources/Protobufs/dota"
 
-git clone https://github.com/paralin/Dota2.git $TMP_FOLDER
+git clone https://github.com/happylyang/Dota2-1.git $TMP_FOLDER
 
 # this will link the necessary google protos
 ln -s $DOTA_PROTOS_PATH/../google $DOTA_PROTOS_PATH

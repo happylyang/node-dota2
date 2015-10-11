@@ -1,5 +1,6 @@
 test/config.js
 test/sentry
 node_modules
+.DS_Store
 test/node_modules
 *.swp

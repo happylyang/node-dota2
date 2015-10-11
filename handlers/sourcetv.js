@@ -10,8 +10,8 @@ var Dota2 = require("../index"),
 
 // Methods
 
-Dota2.Dota2Client.prototype.findSourceTVGames = function(filterOptions, callback) {
-    callback = callback || null;
+Dota2.Dota2Client.prototype.findSourceTVGames = function(filterOptions) {
+    // callback = callback || null;
     /* Sends a message to the Game Coordinator requesting `accountId`'s profile data.  Listen for `profileData` event for Game Coordinator's response. */
     if (!this._gcReady) {
         if (this.debug) util.log("GC not ready, please listen for the 'ready' event.");
@@ -21,34 +21,34 @@ Dota2.Dota2Client.prototype.findSourceTVGames = function(filterOptions, callback
     if (this.debug) util.log("Sending find SourceTV games request");
 
     /* Using default params and merging with filterOptions, note: numGames is ignored from GC and > 6 causes no response at all */
-    var payload = dota_gcmessages_client.CMsgFindSourceTVGames.serialize(merge({
+    var payload = dota_gcmessages_client.CMsgClientToGCFindTopSourceTVGames.serialize(merge({
         searchKey: '',
-        start: 0,
-        numGames: 6,
-        leagueid: 0,
-        heroid: 0,
-        teamGame: false,
-        customGameId: 0,
+        leagueId: 0,
+        heroId: 0,
+        startGame: 0,
+        gameListIndex: 0,
+        lobbyIds: []
     },filterOptions));
 
-    this._client.toGC(this._appid, (Dota2.EDOTAGCMsg.k_EMsgGCFindSourceTVGames | protoMask), payload, callback);
+    this._client.toGC(this._appid, (Dota2.EDOTAGCMsg.k_EMsgClientToGCFindTopSourceTVGames | protoMask), payload);
 };
 
 // Handlers
 
 var handlers = Dota2.Dota2Client.prototype._handlers;
 
-handlers[Dota2.EDOTAGCMsg.k_EMsgGCSourceTVGamesResponse] = function onSourceTVGamesResponse(message, callback) {
-    callback = callback || null;
+handlers[Dota2.EDOTAGCMsg.k_EMsgGCToClientFindTopSourceTVGamesResponse] = function onSourceTVGamesResponse(message) {
+    // callback = callback || null;
+    var sourceTVGamesResponse = dota_gcmessages_client.CMsgGCToClientFindTopSourceTVGamesResponse.parse(message);
 
-    var sourceTVGamesResponse = dota_gcmessages_client.CMsgSourceTVGamesResponse.parse(message);
-
-    if (typeof sourceTVGamesResponse.games !== "undefined" && sourceTVGamesResponse.games.length > 0) {
+    // if (typeof sourceTVGamesResponse.gameList !== "undefined" && sourceTVGamesResponse.gameList.length > 0) {
         if (this.debug) util.log("Received SourceTV games data");
-        if (callback) callback(sourceTVGamesResponse);
-    }
-    else {
-        if (this.debug) util.log("Received a bad SourceTV games response");
-        if (callback) callback(sourceTVGamesResponse.result, sourceTVGamesResponse);
-    }
+          this.emit("sourceTVGamesResponse", sourceTVGamesResponse);
+
+        // if (callback) callback(sourceTVGamesResponse);
+    // }
+    // else {
+        // if (this.debug) util.log("Received a bad SourceTV games response");
+        // if (callback) callback(sourceTVGamesResponse.result, sourceTVGamesResponse);
+    // }
 };
