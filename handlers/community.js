@@ -21,7 +21,8 @@ Dota2.Dota2Client.prototype.profileRequest = function(accountId, requestName, ca
   if (this.debug) util.log("Sending profile request");
   var payload = dota_gcmessages_client.CMsgDOTAProfileRequest.serialize({
     "accountId": accountId,
-    "requestName": requestName
+    "requestName": requestName,
+    "engine": 1
   });
 
   this._client.toGC(this._appid, (Dota2.EDOTAGCMsg.k_EMsgGCProfileRequest | protoMask), payload, callback);
@@ -68,7 +69,6 @@ var handlers = Dota2.Dota2Client.prototype._handlers;
 handlers[Dota2.EDOTAGCMsg.k_EMsgGCProfileResponse] = function onProfileResponse(message, callback) {
   callback = callback || null;
   var profileResponse = dota_gcmessages_client.CMsgDOTAProfileResponse.parse(message);
-
   if (profileResponse.result === 1) {
     if (this.debug) util.log("Received profile data for: " + profileResponse.gameAccountClient.accountId);
     this.emit("profileData", profileResponse.gameAccountClient.accountId, profileResponse);
